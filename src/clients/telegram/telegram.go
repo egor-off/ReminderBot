@@ -13,6 +13,8 @@ import (
 const (
 	getUpdatesMethod = "getUpdates"
 	sendMessageMethod = "sendMessage"
+	errMsg = "can't send message"
+	errJson = "cannot Marshal json"
 )
 
 type Client struct {
@@ -52,11 +54,17 @@ func (c *Client) Updates(offset int, limit int) ([]Update, error) {
 	return res.Result, nil
 }
 
-func (c *Client) SendMessage(chatID int, text string) error {
-	const errMsg = "can't send message"
+func (c *Client) SendMessage(message SendingMessage) error {
 	q := url.Values{}
-	q.Add("chat_id", strconv.Itoa(chatID))
-	q.Add("text", text)
+	q.Add("chat_id", strconv.Itoa(message.ChatID))
+	q.Add("text", message.Text)
+	if message.Buttons != nil {
+		s, err := prepareJSON(message.Buttons)
+		if err != nil {
+			return err
+		}
+		q.Add("reply_markup", s)
+	}
 
 	_, err := c.doRequest(sendMessageMethod, q)
 	if err != nil {
@@ -65,7 +73,7 @@ func (c *Client) SendMessage(chatID int, text string) error {
 	return nil
 }
 
-func (c *Client)doRequest(method string, query url.Values) ([]byte, error) {
+func (c *Client) doRequest(method string, query url.Values) ([]byte, error) {
 	const errMsg = "can't do request"
 	u := url.URL{
 		Scheme: "https",
@@ -94,4 +102,12 @@ func (c *Client)doRequest(method string, query url.Values) ([]byte, error) {
 	}
 
 	return body, nil
+}
+
+func prepareJSON(buttons *InlineKeyboardMarkup) (string, error) {
+	b, err := json.Marshal(*buttons)
+	if err != nil {
+		return "", e.Wrap(errJson, err)
+	}
+	return string(b), nil
 }

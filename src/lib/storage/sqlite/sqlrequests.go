@@ -1,5 +1,7 @@
 package sqlite
 
+import "time"
+
 var (
 	createTable = `CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, user_name TEXT UNIQUE ON CONFLICT IGNORE);
 	CREATE TABLE IF NOT EXISTS reminds (remind_id INTEGER PRIMARY KEY, user_id REFERENCES users (user_id), message TEXT, date INTEGER, period INTEGER, reminded BOOLEAN);
@@ -11,4 +13,5 @@ var (
 	deleteUser = `DELETE FROM users WHERE user_name = ?`
 	deleteURL = `DELETE FROM urls WHERE user_id = (SELECT user_id FROM users WHERE user_name = ?)`
 	deleteRemind = `DELETE FROM reminds WHERE user_id = (SELECT user_id FROM users WHERE user_name = ?)`
+	ti time.Time = time.Date(1994, 11, 28, 13, 0, 0, 0, time.Local)
 )
