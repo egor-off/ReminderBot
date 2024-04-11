@@ -1,7 +1,7 @@
 package events
 
 type Fetcher interface {
-	fetch(limit int) ([]Event, error)
+	Fetch(limit int) ([]Event, error)
 }
 
 type Processor interface {
@@ -13,6 +13,7 @@ type Type int
 const (
 	Unknown Type = iota
 	Message
+	CallbackQuery
 )
 
 type Event struct {

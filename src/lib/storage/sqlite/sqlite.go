@@ -1,10 +1,13 @@
-package sqlite
+package storage
 
 import (
 	"context"
 	"database/sql"
+
 	"src/lib/e"
 	"src/lib/storage"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 const (
@@ -76,20 +79,20 @@ func (s *Storage) PickRandom(ctx context.Context, username string) (*storage.Pag
 
 // Remove delete page from database.
 func (s *Storage) Remove(ctx context.Context, p *storage.Page) error {
-	q := `DELETE FROM pages WHERE url = ? AND user_name = ?`
-	if _, err := s.db.ExecContext(ctx, q, p.URL, p.UserName); err != nil {
+	// q := `DELETE FROM pages WHERE url = ? AND user_name = ?`
+	if _, err := s.db.ExecContext(ctx, deleteURL, p.URL, p.UserName); err != nil {
 		return e.Wrap(ErrDeleteFromDB, err)
 	}
 	return nil
 }
 
 // IsExists check if storage exists.
-func (s *Storage) IsExists(ctx context.Context, p *storage.Page) (bool, error) {
-	q := `SELECT COUNT(*) FROM pages WHERE url = ? and user_name = ?`
+func (s *Storage) IsExistsURL(ctx context.Context, p *storage.Page) (bool, error) {
+	// q := `SELECT COUNT(*) FROM pages WHERE url = ? and user_name = ?`
 
 	var count int
 
-	if err := s.db.QueryRowContext(ctx, q, p.URL, p.UserName).Scan(&count); err != nil {
+	if err := s.db.QueryRowContext(ctx, isExistsURL, p.URL, p.UserName).Scan(&count); err != nil {
 		return false, e.Wrap(ErrIsExists, err)
 	}
 
@@ -97,7 +100,7 @@ func (s *Storage) IsExists(ctx context.Context, p *storage.Page) (bool, error) {
 }
 
 func (s *Storage) Init(ctx context.Context) error {
-	_, err := s.db.ExecContext(ctx, createTable)
+	_, err := s.db.ExecContext(ctx, createTables)
 	if err != nil {
 		return e.Wrap(ErrCannotCreateTable, err)
 	}

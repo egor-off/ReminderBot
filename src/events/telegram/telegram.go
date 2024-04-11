@@ -31,6 +31,7 @@ func New(client *telegram.Client, storage storage.Storage) *Processor {
 	}
 }
 
+// Fetch get updates from telegram and makes slice of events.
 func (p *Processor) Fetch(limit int) ([]events.Event, error) {
 	updates, err := p.tg.Updates(p.offset, limit)
 	if err != nil {
@@ -52,14 +53,18 @@ func (p *Processor) Fetch(limit int) ([]events.Event, error) {
 	return res, nil
 }
 
+// Process handles certain event.
 func (p *Processor) Process(event events.Event) error {
 	switch event.Type {
 		case events.Message:
 			return p.processMessage(event)
+		// case events.CallbackQuery:
+		// 	return p.ProcessCallBackQuery(event)
 		default:
 			return e.Wrap("cannot process message", ErrUnknownEventType)
 	}
 }
+
 
 func (p *Processor) processMessage(event events.Event) error {
 	meta, err := meta(event)
@@ -67,7 +72,11 @@ func (p *Processor) processMessage(event events.Event) error {
 		return e.Wrap("can't process message", err)
 	}
 
+	if err := p.doCmd(event.Text, meta.ChatID, meta.UserName); err != nil {
+		return e.Wrap("cannot doCmd", err)
+	}
 
+	return nil
 }
 
 func meta(event events.Event) (Meta, error) {
@@ -90,21 +99,31 @@ func event(upd telegram.Update) events.Event {
 			ChatID: upd.Message.Chat.ID,
 			UserName: upd.Message.From.UserName,
 		}
+	} else if updType == events.CallbackQuery {
+		res.Meta = Meta{
+			ChatID: upd.CallbackData.Message.Chat.ID,
+			UserName: upd.CallbackData.Message.From.UserName,
+		}
 	}
 
 	return res
 }
 
 func fetchText(upd telegram.Update) string {
-	if upd.Message == nil {
+	if upd.Message == nil && upd.CallbackData == nil {
 		return ""
+	} else if upd.Message != nil {
+		return upd.Message.Text
+	} else {
+		return upd.CallbackData.Message.Text
 	}
-	return upd.Message.Text
 }
 
 func fetchType(upd telegram.Update) events.Type{
-	if upd.Message == nil {
-		return events.Unknown
+	if upd.CallbackData != nil {
+		return events.CallbackQuery
+	} else if upd.Message != nil {
+		return events.Message
 	}
-	return events.Message
+	return events.Unknown
 }

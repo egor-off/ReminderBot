@@ -7,18 +7,14 @@ type UpdatesResponse struct {
 
 type Update struct {
 	ID		int `json:"update_id"`
-	Message	*IncomingMessage `json:"message"`
+	Message	*Message `json:"message,omitempty"`
+	CallbackData *CallbackQuery `json:"callback_query,omitempty"`
 }
 
-type IncomingMessage struct {
+type Message struct {
 	Text string `json:"text"`
-	From User `json:"from"`
+	From *User `json:"from"`
 	Chat Chat `json:"chat"`
-}
-
-type SendingMessage struct {
-	ChatID int `json:"chat_id"`
-	Text string `json:"text"`
 	Buttons *InlineKeyboardMarkup `json:"reply_markup,omitempty"`
 }
 
@@ -32,9 +28,16 @@ type Chat struct {
 
 type InlineKeyboardButton struct {
 	Text string `json:"text"`
+	CallbackData string `json:"callback_data"`
 	// what to send ??
 }
 
 type InlineKeyboardMarkup struct {
 	Buttons [][]InlineKeyboardButton `json:"inline_keyboard"`
+}
+
+type CallbackQuery struct {
+	ID string `json:"id"`
+	From User `json:"from"`
+	Message *Message `json:"message"`
 }

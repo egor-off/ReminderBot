@@ -3,17 +3,36 @@ package main
 import (
 	"flag"
 	"log"
-	"src/clients/telegram"
+	tgClient "src/clients/telegram"
+	eventconsumer "src/consumer/eventConsumer"
+	"src/events/telegram"
+	storage "src/lib/storage/sqlite"
 )
 
 const (
 	tgBotHost = "api.telegram.org"
+	batchSize = 100
+	pathDB = "./DB/tg_bot.db"
 )
 
 func main() {
-	tgClient := telegram.New(tgBotHost, mustToken())
-	fetcher := fetcher.New()
-	processor := processor.New(tgClient, )
+	db, err := storage.New(pathDB)
+	if err != nil {
+		log.Fatalln("cannot start DB ", err)
+	}
+	evetsProcessor := telegram.New(
+		tgClient.New(tgBotHost, mustToken()),
+		db,
+	)
+
+	log.Println("service started")
+
+	consumer := eventconsumer.New(evetsProcessor, evetsProcessor, batchSize)
+
+	if err := consumer.Start(); err != nil {
+		log.Fatal("service stopped", err)
+	}
+
 }
 
 func mustToken() string {

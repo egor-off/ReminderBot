@@ -14,7 +14,8 @@ const (
 	getUpdatesMethod = "getUpdates"
 	sendMessageMethod = "sendMessage"
 	errMsg = "can't send message"
-	errJson = "cannot Marshal json"
+	errMarshalJSON = "cannot Marshal json"
+	errUnmarshalJSON = "can't unmarshal json"
 )
 
 type Client struct {
@@ -28,6 +29,16 @@ func New(host string, token string) *Client {
 		host:	host,
 		basePath: newBasePath(token),
 		client:	http.Client{},
+	}
+}
+
+func NewMessage(chatID int, text string, buttons *InlineKeyboardMarkup) *Message {
+	return &Message{
+		Chat: Chat{
+			ID: chatID,
+		},
+		Text: text,
+		Buttons: buttons,
 	}
 }
 
@@ -48,16 +59,18 @@ func (c *Client) Updates(offset int, limit int) ([]Update, error) {
 	var res UpdatesResponse
 
 	if err := json.Unmarshal(data, &res); err != nil {
-		return nil, e.Wrap("can't unmarshal json", err)
+		return nil, e.Wrap(errUnmarshalJSON, err)
 	}
 
 	return res.Result, nil
 }
 
-func (c *Client) SendMessage(message SendingMessage) error {
+func (c *Client) SendMessage(message Message) error {
 	q := url.Values{}
-	q.Add("chat_id", strconv.Itoa(message.ChatID))
+	q.Add("chat_id", strconv.Itoa(message.Chat.ID))
 	q.Add("text", message.Text)
+
+	// me don't like it
 	if message.Buttons != nil {
 		s, err := prepareJSON(message.Buttons)
 		if err != nil {
@@ -107,7 +120,7 @@ func (c *Client) doRequest(method string, query url.Values) ([]byte, error) {
 func prepareJSON(buttons *InlineKeyboardMarkup) (string, error) {
 	b, err := json.Marshal(*buttons)
 	if err != nil {
-		return "", e.Wrap(errJson, err)
+		return "", e.Wrap(errMarshalJSON, err)
 	}
 	return string(b), nil
 }

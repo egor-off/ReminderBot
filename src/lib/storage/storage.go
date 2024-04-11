@@ -3,13 +3,14 @@ package storage
 import (
 	"errors"
 	"time"
+	"context"
 )
 
 type Storage interface {
-	Save(p *Page) error
-	PickRandom(userName string) (*Page, error)
-	Remove(p *Page) error
-	IsExists(p *Page) (bool, error)
+	SavePage(ctx context.Context, p *Page) error
+	PickRandom(ctx context.Context, userName string) (*Page, error)
+	Remove(ctx context.Context, p *Page) error
+	IsExistsURL(ctx context.Context, p *Page) (bool, error)
 	// work with reminds needed
 }
 
