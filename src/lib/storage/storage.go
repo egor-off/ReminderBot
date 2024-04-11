@@ -7,11 +7,33 @@ import (
 )
 
 type Storage interface {
+	Saver
+	Remover
+	Picker
+	IsExister
+}
+
+type Saver interface {
 	SavePage(ctx context.Context, p *Page) error
-	PickRandom(ctx context.Context, userName string) (*Page, error)
-	Remove(ctx context.Context, p *Page) error
+	SaveNewUser(ctx context.Context, username string) error
+	SaveRemind(ctx context.Context, r *Reminds) error
+}
+
+type Remover interface {
+	RemoveUser(ctx context.Context, userName string) error
+	RemovePage(ctx context.Context, p *Page) error
+	RemoveRemind(ctx context.Context, r *Reminds) error
+}
+
+type Picker interface {
+	PickRandomURL(ctx context.Context, userName string) (*Page, error)
+	PickReminds(ctx context.Context, userName string) ([]Reminds, error)
+}
+
+type IsExister interface {
+	IsExistsUser(ctx context.Context, userName string) (bool, error)
 	IsExistsURL(ctx context.Context, p *Page) (bool, error)
-	// work with reminds needed
+	IsExistsRemind(ctx context.Context, r *Reminds) (bool, error)
 }
 
 type Page struct {

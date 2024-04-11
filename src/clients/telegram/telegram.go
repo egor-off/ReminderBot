@@ -94,7 +94,7 @@ func (c *Client) doRequest(method string, query url.Values) ([]byte, error) {
 		Path: path.Join(c.basePath, method),
 	}
 
-	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	req, err := http.NewRequest(http.MethodPost, u.String(), nil)
 	if err != nil {
 		return nil, e.Wrap(errMsg, err)
 	}

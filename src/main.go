@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	tgClient "src/clients/telegram"
@@ -20,6 +21,8 @@ func main() {
 	if err != nil {
 		log.Fatalln("cannot start DB ", err)
 	}
+
+	db.Init(context.TODO())
 	evetsProcessor := telegram.New(
 		tgClient.New(tgBotHost, mustToken()),
 		db,
