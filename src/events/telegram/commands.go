@@ -32,9 +32,9 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 	case HelpCmd:
 		return p.sendHelp(chatID)
 	case StartCmd:
-		return p.sendHello(chatID)
+		return p.sendHello(chatID, username)
 	default:
-		return p.tg.SendMessage(*telegram.NewMessage(chatID, msgUnknownCommand, nil))
+		return p.tg.SendMessage(telegram.NewMessage(chatID, msgUnknownCommand, nil))
 	}
 }
 
@@ -46,20 +46,20 @@ func (p *Processor) savePage(pageURL string, chatID int, username string) (err e
 		UserName: username,
 	}
 
-	isExsists, err := p.storage.IsExistsURL(context.TODO(), page)
+	isExsists, err := p.storage.IsExistsPage(context.TODO(), page)
 	if err != nil {
 		return err
 	}
 
 	if isExsists {
-		return p.tg.SendMessage(*telegram.NewMessage(chatID, msgAllreadyExists, nil))
+		return p.tg.SendMessage(telegram.NewMessage(chatID, msgAllreadyExists, nil))
 	}
 
 	if err := p.storage.SavePage(context.TODO(), page); err != nil {
 		return err
 	}
 
-	if err := p.tg.SendMessage(*telegram.NewMessage(chatID, msgSaved, nil)); err != nil {
+	if err := p.tg.SendMessage(telegram.NewMessage(chatID, msgSaved, nil)); err != nil {
 		return err
 	}
 
@@ -71,27 +71,36 @@ func (p *Processor) sendRandom(chatID int, username string) (err error) {
 		err = e.WrapIfErr("cannot do cmd: sendRandom", err)
 	}()
 
-		page, err := p.storage.PickRandom(context.TODO(), username)
+		page, err := p.storage.PickRandomPage(context.TODO(), username)
 
 		if err != nil && !errors.Is(err, storage.ErrNoSavedPages) {
 			return err
 		} else if errors.Is(err, storage.ErrNoSavedPages) {
-			return p.tg.SendMessage(*telegram.NewMessage(chatID, msgNoSavedURL, nil))
+			return p.tg.SendMessage(telegram.NewMessage(chatID, msgNoSavedURL, nil))
 		}
 
-		if err := p.tg.SendMessage(*telegram.NewMessage(chatID, page.URL, nil)); err != nil {
+		if err := p.tg.SendMessage(telegram.NewMessage(chatID, page.URL, nil)); err != nil {
 			return err
 		}
 
-	return p.storage.Remove(context.TODO(), page)
+	return p.storage.RemovePage(context.TODO(), page)
 }
 
 func (p *Processor) sendHelp(chatID int) error {
-	return p.tg.SendMessage(*telegram.NewMessage(chatID, msgHelp, nil))
+	return p.tg.SendMessage(telegram.NewMessage(chatID, msgHelp, nil))
 }
 
-func (p *Processor) sendHello(chatID int) error {
-	return p.tg.SendMessage(*telegram.NewMessage(chatID, msgHello, nil))
+func (p *Processor) sendHello(chatID int, username string) error {
+	b, err := p.storage.IsExistsUser(context.TODO(), username)
+	if err != nil {
+		return e.Wrap("cannot check if user exist: ", err)
+	}
+	if !b {
+		if err := p.storage.SaveNewUser(context.TODO(), username); err != nil {
+			return e.Wrap("cannot save new user: ", err)
+		}
+	}
+	return p.tg.SendMessage(telegram.NewMessage(chatID, msgHello, nil))
 }
 
 func isAddCmd(text string) bool {

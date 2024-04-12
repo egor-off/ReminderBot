@@ -6,7 +6,7 @@ const (
 	If you want to get link, just send me /rnd command and i will answer you.
 	Keep in mind, I will delete this random link after.`
 
-	msgHello = `Hello! This is simple autoreminder and linksaver bot!\n\n` + msgHelp
+	msgHello = "Hello! This is simple autoreminder and linksaver bot!\n\n" + msgHelp
 
 	msgUnknownCommand = "Unknown command 🫠"
 	msgNoSavedURL = "No saved URL 😬"

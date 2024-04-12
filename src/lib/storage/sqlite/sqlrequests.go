@@ -7,7 +7,7 @@ var (
 	CREATE TABLE IF NOT EXISTS urls (url_id INTEGER PRIMARY KEY, user_id REFERENCES users (user_id), url TEXT)`
 
 	// Inserts
-	insertNewUser = `INSER INTO users (user_name) VALUES (?)`
+	insertNewUser = `INSERT INTO users (user_name) VALUES (?)`
 	insertURL = `INSERT INTO urls (user_id, url) VALUES ((SELECT user_id FROM users WHERE user_name = ?), ?)`
 	insertRemind = `INSERT INTO reminds (user_id, message, date, period, reminded) VALUES ((SELECT user_id FROM users WHERE user_name = ?), ?, ?, ?, 0)`
 

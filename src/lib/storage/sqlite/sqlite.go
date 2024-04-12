@@ -3,10 +3,8 @@ package storage
 import (
 	"context"
 	"database/sql"
-
 	"src/lib/e"
 	"src/lib/storage"
-
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -39,7 +37,7 @@ func New(path string) (*Storage, error) {
 	return &Storage{db: db}, nil
 }
 
-//SaveNewUser func saves new user to database.
+//SaveNewUser saves new user to database.
 func (s *Storage) SaveNewUser(ctx context.Context, username string) error {
 	if _, err := s.db.ExecContext(ctx, insertNewUser, username); err != nil {
 		return e.Wrap(ErrAddNewUser, err)
@@ -47,7 +45,7 @@ func (s *Storage) SaveNewUser(ctx context.Context, username string) error {
 	return nil
 }
 
-// Save func saves page to database.
+// SavePage saves page to database.
 func (s *Storage) SavePage(ctx context.Context, p *storage.Page) error {
 	if _, err := s.db.ExecContext(ctx, insertURL, p.UserName, p.URL); err != nil {
 		return e.Wrap(ErrCannotSavePage, err)
@@ -64,8 +62,8 @@ func (s *Storage) SaveRemind(ctx context.Context, p *storage.Reminds) error {
 	return nil
 }
 
-// PickRandom gives random URL from database by username.
-func (s *Storage) PickRandom(ctx context.Context, username string) (*storage.Page, error) {
+// PickRandomPage gives random URL from database by username.
+func (s *Storage) PickRandomPage(ctx context.Context, username string) (*storage.Page, error) {
 	var url string
 
 	if err := s.db.QueryRowContext(ctx, pickRandom, username).Scan(&url); err == sql.ErrNoRows {
@@ -78,7 +76,7 @@ func (s *Storage) PickRandom(ctx context.Context, username string) (*storage.Pag
 }
 
 // Remove delete page from database.
-func (s *Storage) Remove(ctx context.Context, p *storage.Page) error {
+func (s *Storage) RemovePage(ctx context.Context, p *storage.Page) error {
 	// q := `DELETE FROM pages WHERE url = ? AND user_name = ?`
 	if _, err := s.db.ExecContext(ctx, deleteURL, p.URL, p.UserName); err != nil {
 		return e.Wrap(ErrDeleteFromDB, err)
@@ -86,8 +84,16 @@ func (s *Storage) Remove(ctx context.Context, p *storage.Page) error {
 	return nil
 }
 
+// RemoveUser delete user from database.
+func (s *Storage) RemoveUser(ctx context.Context, userName string) error {
+	if _, err := s.db.ExecContext(ctx, deleteUser, userName); err != nil {
+		return e.Wrap(ErrDeleteFromDB, err)
+	}
+	return nil
+}
+
 // IsExists check if storage exists.
-func (s *Storage) IsExistsURL(ctx context.Context, p *storage.Page) (bool, error) {
+func (s *Storage) IsExistsPage(ctx context.Context, p *storage.Page) (bool, error) {
 	// q := `SELECT COUNT(*) FROM pages WHERE url = ? and user_name = ?`
 
 	var count int
@@ -99,6 +105,18 @@ func (s *Storage) IsExistsURL(ctx context.Context, p *storage.Page) (bool, error
 	return count > 0, nil
 }
 
+//IsExistsUser check if user allready exists.
+func (s *Storage) IsExistsUser(ctx context.Context, userName string) (bool, error) {
+	var count int
+
+	if err := s.db.QueryRowContext(ctx, isExistsUser, userName).Scan(&count); err != nil {
+		return false, e.Wrap(ErrIsExists, err)
+	}
+
+	return count > 0, nil
+}
+
+// Init creates tables for database.
 func (s *Storage) Init(ctx context.Context) error {
 	_, err := s.db.ExecContext(ctx, createTables)
 	if err != nil {
