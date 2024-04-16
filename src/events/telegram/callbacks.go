@@ -6,11 +6,6 @@ import (
 	"strings"
 )
 
-const (
-	DeleteURL = "/deleteURL"
-	SaveURL = ""
-)
-
 func (p *Processor) doCallback(text string, meta *Meta) error {
 	text = strings.TrimSpace(text)
 

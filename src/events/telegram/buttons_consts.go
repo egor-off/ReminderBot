@@ -3,7 +3,8 @@ package telegram
 import "src/clients/telegram"
 
 var (
-	// Help
+	// Default buttons.
+	// Help.
 	helpText = "Help ⁉️"
 	helpData = "/help"
 	helpButton = telegram.InlineKeyboardButton{
@@ -11,7 +12,7 @@ var (
 		CallbackData: helpData,
 	}
 
-	// Random
+	// Random.
 	rndText = "Random 🎲"
 	rndData = "/rnd"
 	randomButton = telegram.InlineKeyboardButton{
@@ -19,16 +20,17 @@ var (
 		CallbackData: rndData,
 	}
 
-	// New remind
+	// New remind.
 	newRemindText = "New remind 📝"
-	newRemindData = "/new_remind"
+	newRemindData = "/newRemind"
 	newRemindButton = telegram.InlineKeyboardButton{
 		Text: newRemindText,
 		CallbackData: newRemindData,
 	}
 
-
-	// Delete URL
+	// URL buttons.
+	// TODO: mb add some more? like helpURL and return?
+	// Delete URL.
 	deleteUrlText = "Delete 🗑"
 	deleteUrlData = "/deleteURL"
 	deleteURLButton = telegram.InlineKeyboardButton{
@@ -36,11 +38,44 @@ var (
 		CallbackData: deleteUrlData,
 	}
 
-	// Keep save
+	// Keep save URL.
 	keepSaveText = "Keep save 🫡"
 	keepSaveData = "/saveURL"
 	saveURLButton = telegram.InlineKeyboardButton{
 		Text: keepSaveText,
 		CallbackData: keepSaveData,
+	}
+
+	// Reminds.
+	// Text remind.
+	textRemindText = "Add text 💬"
+	textRemindData = "/textRemind"
+	textRemindButton = telegram.InlineKeyboardButton{
+		Text: textRemindText,
+		CallbackData: textRemindData,
+	}
+
+	// Remind date
+	dateRemindText = "Add date 📅"
+	dateRemindData = "/dateRemind"
+	dateRemindButton = telegram.InlineKeyboardButton{
+		Text: dateRemindText,
+		CallbackData: dateRemindData,
+	}
+
+	// Remind period
+	periodRemindText = "Add period 🕑"
+	periodRemindData = "/periodRemind"
+	periodRemindButton = telegram.InlineKeyboardButton{
+		Text: periodRemindText,
+		CallbackData: periodRemindData,
+	}
+
+	// Remind cancel
+	cancelRemindText = "Cancel ⛔️"
+	cancelRemindData = "/cancelRemind"
+	cancelRemindButton = telegram.InlineKeyboardButton{
+		Text: cancelRemindText,
+		CallbackData: cancelRemindData,
 	}
 )

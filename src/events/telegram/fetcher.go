@@ -1,31 +1,12 @@
 package telegram
 
 import (
-	"errors"
-	"log"
 	"src/clients/telegram"
 	"src/events"
 	"src/lib/e"
 	"src/lib/storage"
+	"log"
 )
-
-var (
-	ErrUnknownEventType = errors.New("unknown event type")
-	ErrUnknownMetaType = errors.New("unknown meta type")
-)
-
-type Processor struct {
-	tg *telegram.Client
-	offset int
-	storage storage.Storage
-}
-
-type Meta struct {
-	ChatID int
-	UserName string
-	Data string
-	ID string
-}
 
 func New(client *telegram.Client, storage storage.Storage) *Processor {
 	return &Processor{
@@ -53,55 +34,6 @@ func (p *Processor) Fetch(limit int) ([]events.Event, error) {
 
 	p.offset = updates[len(updates) - 1].ID + 1
 
-	return res, nil
-}
-
-// Process handles certain event.
-func (p *Processor) Process(event events.Event) error {
-	// switch event.Type  {
-	// 	case events.Message:
-	// 		return p.processMessage(event)
-	// 	// case events.CallbackQuery:
-	// 	// 	return p.processCallBackQuery(event)
-	// 	default:
-	// 		return e.Wrap("cannot process message", ErrUnknownEventType)
-	// }
-
-	if event.Type != events.Unknown {
-		return p.processMessage(event)
-	} else {
-		return e.Wrap("cannot process mesage", ErrUnknownEventType)
-	}
-}
-
-
-func (p *Processor) processMessage(event events.Event) error {
-	meta, err := meta(event)
-	if err != nil {
-		return e.Wrap("can't process message", err)
-	}
-
-	switch event.Type {
-	case events.Message:
-		if err := p.doCmd(event.Text, meta.ChatID, meta.UserName); err != nil {
-			return e.Wrap("cannot doCmd", err)
-		}
-	case events.CallbackQuery:
-		if err := p.doCallback(event.Text, &meta); err != nil {
-			return e.Wrap("cannot doCmd", err)
-		}
-	default:
-		return nil
-	}
-
-	return nil
-}
-
-func meta(event events.Event) (Meta, error) {
-	res, ok := event.Meta.(Meta)
-	if !ok {
-		return Meta{}, e.Wrap("can't get meta", ErrUnknownMetaType)
-	}
 	return res, nil
 }
 

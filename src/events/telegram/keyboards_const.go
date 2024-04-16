@@ -3,8 +3,8 @@ package telegram
 import "src/clients/telegram"
 
 var (
-	//Default sending
-	defaultKeyboard = telegram.InlineKeyboardMarkup{
+	// Default sending
+	defaultKeyboard = &telegram.InlineKeyboardMarkup{
 		Buttons: [][]telegram.InlineKeyboardButton{
 			{
 				helpButton,
@@ -14,8 +14,8 @@ var (
 		},
 	}
 
-	//Sending with rnd answer
-	AfterRndKeyboard = telegram.InlineKeyboardMarkup{
+	// Sending with rnd answer
+	afterRndKeyboard = &telegram.InlineKeyboardMarkup{
 		Buttons: [][]telegram.InlineKeyboardButton{
 			{
 				saveURLButton,
@@ -24,4 +24,15 @@ var (
 		},
 	}
 
+	// Remind buttons
+	remindButtons = &telegram.InlineKeyboardMarkup{
+		Buttons: [][]telegram.InlineKeyboardButton{
+			{
+				textRemindButton,
+				dateRemindButton,
+				periodRemindButton,
+				cancelRemindButton,
+			},
+		},
+	}
 )
