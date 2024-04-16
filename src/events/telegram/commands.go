@@ -17,6 +17,8 @@ const (
 	StartCmd = "/start"
 )
 
+// TODO: rework commands with Meta
+
 func (p *Processor) doCmd(text string, chatID int, username string) error {
 	text = strings.TrimSpace(text)
 
@@ -34,8 +36,21 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 	case StartCmd:
 		return p.sendHello(chatID, username)
 	default:
-		return p.tg.SendMessage(telegram.NewMessage(chatID, msgUnknownCommand, nil))
+		return p.tg.SendMessage(telegram.NewMessage(chatID, msgUnknownCommand, &AfterRndKeyboard))
 	}
+}
+
+func (p *Processor) deleteURL(text string, meta *Meta) error {
+	page := &storage.Page{
+		URL: text,
+		UserName: meta.UserName,
+	}
+
+	if err := p.storage.RemovePage(context.TODO(), page); err != nil {
+		return e.Wrap("cannot delete page", err)
+	}
+
+	return nil
 }
 
 func (p *Processor) savePage(pageURL string, chatID int, username string) (err error) {
@@ -79,7 +94,7 @@ func (p *Processor) sendRandom(chatID int, username string) (err error) {
 			return p.tg.SendMessage(telegram.NewMessage(chatID, msgNoSavedURL, nil))
 		}
 
-		if err := p.tg.SendMessage(telegram.NewMessage(chatID, page.URL, nil)); err != nil {
+		if err := p.tg.SendMessage(telegram.NewMessage(chatID, page.URL, &AfterRndKeyboard)); err != nil {
 			return err
 		}
 
@@ -100,7 +115,7 @@ func (p *Processor) sendHello(chatID int, username string) error {
 			return e.Wrap("cannot save new user: ", err)
 		}
 	}
-	return p.tg.SendMessage(telegram.NewMessage(chatID, msgHello, nil))
+	return p.tg.SendMessage(telegram.NewMessage(chatID, msgHello, &defaultKeyboard))
 }
 
 func isAddCmd(text string) bool {

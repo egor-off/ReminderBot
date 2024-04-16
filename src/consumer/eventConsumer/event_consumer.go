@@ -32,6 +32,8 @@ func (c *Consumer) Start() error {
 
 		if len(gotEvents) == 0 {
 			time.Sleep(1 * time.Second)
+
+			continue
 		}
 
 		if err := c.handleEvents(gotEvents); err != nil {

@@ -66,7 +66,7 @@ func (s *Storage) SaveRemind(ctx context.Context, p *storage.Reminds) error {
 func (s *Storage) PickRandomPage(ctx context.Context, username string) (*storage.Page, error) {
 	var url string
 
-	if err := s.db.QueryRowContext(ctx, pickRandom, username).Scan(&url); err == sql.ErrNoRows {
+	if err := s.db.QueryRowContext(ctx, pickRandomURL, username).Scan(&url); err == sql.ErrNoRows {
 		return nil, storage.ErrNoSavedPages
 	} else if err != nil {
 		return nil, e.Wrap(ErrSelectFromDB, err)

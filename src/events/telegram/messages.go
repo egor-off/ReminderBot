@@ -8,6 +8,8 @@ const (
 
 	msgHello = "Hello! This is simple autoreminder and linksaver bot!\n\n" + msgHelp
 
+	msgDeafult = "Push the button to get the result ⏬"
+
 	msgUnknownCommand = "Unknown command 🫠"
 	msgNoSavedURL = "No saved URL 😬"
 	msgAllreadyExists = "This URL already exists 🤌🏽"
