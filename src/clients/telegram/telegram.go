@@ -15,6 +15,7 @@ const (
 	getUpdatesMethod = "getUpdates"
 	sendMessageMethod = "sendMessage"
 	answerCallbackMethod = "answerCallbackQuery"
+	editMessage = "editMessageText"
 	errMsg = "can't send message"
 	errMarshalJSON = "cannot Marshal json"
 	errUnmarshalJSON = "can't unmarshal json"
@@ -76,7 +77,7 @@ func (c *Client) SendMessage(message *Message) error {
 	if message.Buttons != nil {
 		s, err := prepareJSON(message.Buttons)
 		if err != nil {
-			return err
+			return e.Wrap("cannot prepare JSON", err)
 		}
 		q.Add("reply_markup", s)
 	}
@@ -84,6 +85,23 @@ func (c *Client) SendMessage(message *Message) error {
 	_, err := c.doRequest(sendMessageMethod, q)
 	if err != nil {
 		return e.Wrap(errMsg, err)
+	}
+	return nil
+}
+
+func (c *Client) EditMessage(inline_message_id string, message *Message) error {
+	m, err := prepareJSON(message.Buttons)
+	if err != nil {
+		return e.Wrap("cannot prepare JSON", err)
+	}
+	q := url.Values{}
+	q.Add("inline_message_id", inline_message_id)
+	q.Add("text", message.Text)
+	q.Add("reply_markup", m)
+
+	_, err = c.doRequest(editMessage, q)
+	if err != nil {
+		return e.Wrap("cannot edit message", err)
 	}
 	return nil
 }

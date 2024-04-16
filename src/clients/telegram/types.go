@@ -15,6 +15,7 @@ type Update struct {
 
 //Message is type representig the Message we can get in Update.
 type Message struct {
+	Message_id int `json:"message_id"`
 	Text string `json:"text"`
 	From *User `json:"from"`
 	Chat Chat `json:"chat"`
@@ -45,4 +46,5 @@ type CallbackQuery struct {
 	From User `json:"from"`
 	Message *Message `json:"message"`
 	Data string `json:"data"`
+	InlineMessageId string `json:"inline_message_id"`
 }
