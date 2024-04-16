@@ -34,7 +34,6 @@ type Chat struct {
 type InlineKeyboardButton struct {
 	Text string `json:"text"`
 	CallbackData string `json:"callback_data"`
-	// what to send ??
 }
 
 type InlineKeyboardMarkup struct {

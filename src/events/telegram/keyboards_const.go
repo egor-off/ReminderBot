@@ -25,7 +25,7 @@ var (
 	}
 
 	// Remind buttons
-	remindButtons = &telegram.InlineKeyboardMarkup{
+	remindKeyboard = &telegram.InlineKeyboardMarkup{
 		Buttons: [][]telegram.InlineKeyboardButton{
 			{
 				textRemindButton,

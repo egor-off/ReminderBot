@@ -8,11 +8,13 @@ import (
 	"path"
 	"src/lib/e"
 	"strconv"
+	"strings"
 )
 
 const (
 	getUpdatesMethod = "getUpdates"
 	sendMessageMethod = "sendMessage"
+	answerCallbackMethod = "answerCallbackQuery"
 	errMsg = "can't send message"
 	errMarshalJSON = "cannot Marshal json"
 	errUnmarshalJSON = "can't unmarshal json"
@@ -94,12 +96,12 @@ func (c *Client) doRequest(method string, query url.Values) ([]byte, error) {
 		Path: path.Join(c.basePath, method),
 	}
 
-	req, err := http.NewRequest(http.MethodPost, u.String(), nil)
+	req, err := http.NewRequest(http.MethodPost, u.String(), strings.NewReader(query.Encode()))
 	if err != nil {
 		return nil, e.Wrap(errMsg, err)
 	}
 
-	req.URL.RawQuery = query.Encode()
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	resp, err := c.client.Do(req)
 
 	if err != nil {
