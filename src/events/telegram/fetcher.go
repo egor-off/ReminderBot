@@ -50,13 +50,14 @@ func event(upd telegram.Update) events.Event {
 		res.Meta = Meta{
 			ChatID: upd.Message.Chat.ID,
 			UserName: upd.Message.From.UserName,
+			MessageID: upd.Message.MessageID,
 		}
 	case events.CallbackQuery:
 		res.Meta = Meta{
 			ChatID: upd.CallbackData.Message.Chat.ID,
 			UserName: upd.CallbackData.From.UserName,
 			Data: upd.CallbackData.Data,
-			ID: upd.CallbackData.ID,
+			MessageID: upd.CallbackData.Message.MessageID,
 		}
 	}
 

@@ -6,6 +6,11 @@ type UpdatesResponse struct {
 	Result []Update `json:"result"`
 }
 
+type MessageResponse struct {
+	Ok bool `json:"ok"`
+	Result Message `json:"result"`
+}
+
 //Update is the one of Updates from slice, we got from response getU[dates.
 type Update struct {
 	ID		int `json:"update_id"`
@@ -15,7 +20,7 @@ type Update struct {
 
 //Message is type representig the Message we can get in Update.
 type Message struct {
-	Message_id int `json:"message_id"`
+	MessageID int `json:"message_id"`
 	Text string `json:"text"`
 	From *User `json:"from"`
 	Chat Chat `json:"chat"`

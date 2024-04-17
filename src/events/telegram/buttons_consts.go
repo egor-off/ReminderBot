@@ -13,11 +13,11 @@ var (
 	}
 
 	// Random.
-	rndText = "Random 🎲"
-	rndData = "/rnd"
+	randomText = "Random 🎲"
+	randomData = "/rnd"
 	randomButton = telegram.InlineKeyboardButton{
-		Text: rndText,
-		CallbackData: rndData,
+		Text: randomText,
+		CallbackData: randomData,
 	}
 
 	// New remind.
@@ -46,6 +46,14 @@ var (
 		CallbackData: keepSaveData,
 	}
 
+	// Next URL.
+	nextUrlText = "Next ➡️"
+	nextUrlData = randomData
+	nextURLButton = telegram.InlineKeyboardButton{
+		Text: nextUrlText,
+		CallbackData: nextUrlData,
+	}
+
 	// Reminds.
 	// Text remind.
 	textRemindText = "Add text 💬"
@@ -55,7 +63,7 @@ var (
 		CallbackData: textRemindData,
 	}
 
-	// Remind date
+	// Remind date.
 	dateRemindText = "Add date 📅"
 	dateRemindData = "/dateRemind"
 	dateRemindButton = telegram.InlineKeyboardButton{
@@ -63,7 +71,7 @@ var (
 		CallbackData: dateRemindData,
 	}
 
-	// Remind period
+	// Remind period.
 	periodRemindText = "Add period 🕑"
 	periodRemindData = "/periodRemind"
 	periodRemindButton = telegram.InlineKeyboardButton{
@@ -71,7 +79,7 @@ var (
 		CallbackData: periodRemindData,
 	}
 
-	// Remind cancel
+	// Remind cancel.
 	cancelRemindText = "Cancel ⛔️"
 	cancelRemindData = "/cancelRemind"
 	cancelRemindButton = telegram.InlineKeyboardButton{

@@ -11,6 +11,7 @@ type Storage interface {
 	Remover
 	Picker
 	IsExister
+	Updater
 }
 
 type Saver interface {
@@ -27,6 +28,7 @@ type Remover interface {
 
 type Picker interface {
 	PickRandomPage(ctx context.Context, userName string) (*Page, error)
+	PickUserInfo(ctx context.Context, userName string) (*UserInfo, error)
 	// PickReminds(ctx context.Context, userName string) ([]Reminds, error)
 }
 
@@ -36,9 +38,18 @@ type IsExister interface {
 	// IsExistsRemind(ctx context.Context, r *Reminds) (bool, error)
 }
 
+type Updater interface {
+	UpdateUserInfo(ctx context.Context, username string, messageID int, chatID int) error
+}
+
 type Page struct {
 	URL string
 	UserName string
+}
+
+type UserInfo struct {
+	ChatID int
+	MessageID int
 }
 
 type Reminds struct {

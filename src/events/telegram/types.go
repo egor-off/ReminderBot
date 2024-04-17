@@ -15,5 +15,6 @@ type Meta struct {
 	ChatID int
 	UserName string
 	Data string
-	ID string
+	MessageID int
+	InlineMessageID string
 }

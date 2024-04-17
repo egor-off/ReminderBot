@@ -9,7 +9,7 @@ var (
 			{
 				helpButton,
 				randomButton,
-				newRemindButton,
+				// newRemindButton,
 			},
 		},
 	}
@@ -18,8 +18,9 @@ var (
 	afterRndKeyboard = &telegram.InlineKeyboardMarkup{
 		Buttons: [][]telegram.InlineKeyboardButton{
 			{
-				saveURLButton,
 				deleteURLButton,
+				saveURLButton,
+				nextURLButton,
 			},
 		},
 	}

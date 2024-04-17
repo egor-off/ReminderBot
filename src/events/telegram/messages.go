@@ -2,7 +2,7 @@ package telegram
 
 import (
 	"context"
-	"errors"
+	"encoding/json"
 	"log"
 	"net/url"
 	"src/clients/telegram"
@@ -12,53 +12,43 @@ import (
 )
 
 const (
-	RndCmd = "/rnd"
-	HelpCmd = "/help"
 	StartCmd = "/start"
 )
 
 // TODO: rework commands with Meta
 
-func (p *Processor) doMessage(text string, chatID int, username string) error {
+func (p *Processor) doMessage(text string, meta *Meta) error {
 	text = strings.TrimSpace(text)
 
-	log.Printf("got new command %s from %s\n", text, username)
+	log.Printf("got new command %s from %s\n", text, meta.UserName)
 
 	if isAddCmd(text) {
-		return p.savePage(text, chatID, username)
+		return p.savePage(text, meta)
 	}
 
 	switch text {
-	case RndCmd:
-		return p.sendRandom(chatID, username)
-	case HelpCmd:
-		return p.sendHelp(chatID)
 	case StartCmd:
-		return p.sendHello(chatID, username)
+		return p.sendHello(meta)
 	default:
-		return p.tg.SendMessage(telegram.NewMessage(chatID, msgUnknownCommand, defaultKeyboard))
+		return p.unknownMessage(meta)
 	}
 }
 
-func (p *Processor) deleteURL(text string, meta *Meta) error {
-	page := &storage.Page{
-		URL: text,
-		UserName: meta.UserName,
-	}
-
-	if err := p.storage.RemovePage(context.TODO(), page); err != nil {
-		return e.Wrap("cannot delete page", err)
-	}
-
-	return nil
-}
-
-func (p *Processor) savePage(pageURL string, chatID int, username string) (err error) {
+func (p *Processor) savePage(pageURL string, meta *Meta) (err error) {
 	defer func () {err = e.WrapIfErr("cannot do command: save page", err)}()
 
 	page := &storage.Page{
 		URL: pageURL,
-		UserName: username,
+		UserName: meta.UserName,
+	}
+
+	if err := p.tg.DeleteMessage(meta.ChatID, meta.MessageID); err != nil {
+		return err
+	}
+
+	u, err := p.storage.PickUserInfo(context.TODO(), meta.UserName)
+	if err != nil {
+		return err
 	}
 
 	isExsists, err := p.storage.IsExistsPage(context.TODO(), page)
@@ -67,55 +57,64 @@ func (p *Processor) savePage(pageURL string, chatID int, username string) (err e
 	}
 
 	if isExsists {
-		return p.tg.SendMessage(telegram.NewMessage(chatID, msgAllreadyExists, nil))
+		return p.tg.EditMessage(telegram.NewEditMessage(u.MessageID, u.ChatID, msgAllreadyExists , defaultKeyboard))
 	}
 
 	if err := p.storage.SavePage(context.TODO(), page); err != nil {
 		return err
 	}
 
-	if err := p.tg.SendMessage(telegram.NewMessage(chatID, msgSaved, nil)); err != nil {
+	if err := p.tg.EditMessage(telegram.NewEditMessage(u.MessageID, u.ChatID, msgSaved, defaultKeyboard)); err != nil {
 		return err
 	}
 
 	return nil
 }
+// func (p *Processor) sendHelp(chatID int) error {
+// 	_, err := p.tg.SendMessage(telegram.NewMessage(chatID, msgHelp, nil))
+// 	return err
+// }
 
-func (p *Processor) sendRandom(chatID int, username string) (err error) {
-	defer func ()  {
-		err = e.WrapIfErr("cannot do cmd: sendRandom", err)
-	}()
+func (p *Processor) unknownMessage(meta *Meta) error {
+	u, err := p.storage.PickUserInfo(context.TODO(), meta.UserName)
+	if err != nil {
+		return err
+	}
 
-		page, err := p.storage.PickRandomPage(context.TODO(), username)
-
-		if err != nil && !errors.Is(err, storage.ErrNoSavedPages) {
-			return err
-		} else if errors.Is(err, storage.ErrNoSavedPages) {
-			return p.tg.SendMessage(telegram.NewMessage(chatID, msgNoSavedURL, nil))
-		}
-
-		if err := p.tg.SendMessage(telegram.NewMessage(chatID, page.URL, afterRndKeyboard)); err != nil {
-			return err
-		}
-
-	return p.storage.RemovePage(context.TODO(), page)
+	if err := p.tg.EditMessage(telegram.NewEditMessage(u.MessageID, meta.ChatID, msgUnknownCommand, defaultKeyboard)); err != nil {
+		return e.Wrap("cannot send message", err)
+	}
+	return p.tg.DeleteMessage(meta.ChatID, meta.MessageID)
 }
 
-func (p *Processor) sendHelp(chatID int) error {
-	return p.tg.SendMessage(telegram.NewMessage(chatID, msgHelp, nil))
-}
-
-func (p *Processor) sendHello(chatID int, username string) error {
-	b, err := p.storage.IsExistsUser(context.TODO(), username)
+func (p *Processor) sendHello(meta *Meta) error {
+	b, err := p.storage.IsExistsUser(context.TODO(), meta.UserName)
 	if err != nil {
 		return e.Wrap("cannot check if user exist: ", err)
 	}
 	if !b {
-		if err := p.storage.SaveNewUser(context.TODO(), username); err != nil {
+		if err := p.storage.SaveNewUser(context.TODO(), meta.UserName); err != nil {
 			return e.Wrap("cannot save new user: ", err)
 		}
 	}
-	return p.tg.SendMessage(telegram.NewMessage(chatID, msgHello, defaultKeyboard))
+	r, err := p.tg.SendMessage(telegram.NewMessage(meta.ChatID, msgHello, defaultKeyboard))
+	if err != nil {
+		return e.Wrap("cannot send first message: ", err)
+	}
+	var rez telegram.MessageResponse
+	if err := json.Unmarshal(r, &rez); err != nil {
+		e.Wrap("cannot unmarshal mesage response: ", err)
+	}
+
+	if err := p.storage.UpdateUserInfo(context.TODO(), meta.UserName, rez.Result.MessageID, rez.Result.Chat.ID); err != nil {
+		e.Wrap("cannot update info", err)
+	}
+
+	if err := p.tg.DeleteMessage(meta.ChatID, meta.MessageID); err != nil {
+		return e.Wrap("cannot delete message: ", err)
+	}
+
+	return nil
 }
 
 func isAddCmd(text string) bool {

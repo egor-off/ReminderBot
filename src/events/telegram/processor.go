@@ -29,7 +29,7 @@ func (p *Processor) processEvent(event events.Event) error {
 
 	switch event.Type {
 	case events.Message:
-		if err := p.doMessage(event.Text, meta.ChatID, meta.UserName); err != nil {
+		if err := p.doMessage(event.Text, &meta); err != nil {
 			return e.Wrap("cannot doCmd", err)
 		}
 	case events.CallbackQuery:

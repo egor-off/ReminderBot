@@ -2,7 +2,7 @@ package storage
 
 var (
 	// Creator
-	createTables = `CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, user_name TEXT UNIQUE ON CONFLICT IGNORE);
+	createTables = `CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, user_name TEXT UNIQUE ON CONFLICT IGNORE, message_id INTEGER, chat_id INTEGER);
 	CREATE TABLE IF NOT EXISTS reminds (remind_id INTEGER PRIMARY KEY, user_id REFERENCES users (user_id), message TEXT, date INTEGER, period INTEGER, reminded BOOLEAN);
 	CREATE TABLE IF NOT EXISTS urls (url_id INTEGER PRIMARY KEY, user_id REFERENCES users (user_id), url TEXT, removed BOOLEAN);`
 
@@ -11,8 +11,12 @@ var (
 	insertURL = `INSERT INTO urls (user_id, url, removed) VALUES ((SELECT user_id FROM users WHERE user_name = ?), ?, FALSE)`
 	insertRemind = `INSERT INTO reminds (user_id, message, date, period, reminded) VALUES ((SELECT user_id FROM users WHERE user_name = ?), ?, ?, ?, 0)`
 
+	// Upadate
+	updateUsersIDs = `UPDATE users SET message_id = ?, chat_id = ? WHERE user_name = ?`
+
 	// Randomize
 	pickRandomURL = `SELECT url FROM urls WHERE user_id = (SELECT user_id FROM users WHERE user_name = ?) AND removed = FALSE ORDER BY RANDOM() LIMIT 1`
+	pickUserInfo = `SELECT message_id, chat_id FROM users WHERE user_name = ?`
 
 	// Delete
 	deleteUser = `DELETE FROM users WHERE user_name = ?`

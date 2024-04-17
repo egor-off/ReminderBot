@@ -3,8 +3,10 @@ package storage
 import (
 	"context"
 	"database/sql"
+	"log"
 	"src/lib/e"
 	"src/lib/storage"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -60,6 +62,25 @@ func (s *Storage) SaveRemind(ctx context.Context, p *storage.Reminds) error {
 		return e.Wrap("cannot save remind", err)
 	}
 	return nil
+}
+
+func (s *Storage) UpdateUserInfo(ctx context.Context, username string, messageID int, chatID int) error {
+	if _, err := s.db.ExecContext(ctx, updateUsersIDs, messageID, chatID, username); err != nil {
+		return e.Wrap("cannot write IDs: ", err)
+	}
+	return nil
+}
+
+func (s *Storage) PickUserInfo(ctx context.Context, username string) (*storage.UserInfo, error) {
+	u := &storage.UserInfo{}
+
+	if err := s.db.QueryRowContext(ctx, pickUserInfo, username).Scan(&(u.MessageID), &(u.ChatID)); err != nil {
+		return nil, e.Wrap("cannot get userinfo: ", err)
+	}
+
+	log.Printf("userinfo: %v", u)
+
+	return u, nil
 }
 
 // PickRandomPage gives random URL from database by username.

@@ -1,17 +1,19 @@
 package telegram
 
-const (
-	msgHelp = `I can save links and reminds.
-	I will send reminds automatically.
-	If you want to get link, just send me /rnd command and i will answer you.
-	Keep in mind, I will delete this random link after.`
+import "strings"
+
+var (
+	msgHelp = `I can save links! 🔗
+For saving links just send me link in a message. ✍
+Press the "` + randomText + `" button and you'll get random link from messages you have sent before.`
 
 	msgHello = "Hello! This is simple autoreminder and linksaver bot!\n\n" + msgHelp
 
 	msgDeafult = "Push the button to get the result ⏬"
 
-	msgUnknownCommand = "Unknown command 🫠"
-	msgNoSavedURL = "No saved URL 😬"
-	msgAllreadyExists = "This URL already exists 🤌🏽"
-	msgSaved = "Saved 🤞🏻"
+	msgUnknownCommand = "Unknown command 🫠\n\nPlease, send me a link to save.\nOr you can " + strings.ToLower(msgDeafult)
+	msgNoSavedURL = "No saved URL 😬\n\n" + msgDeafult
+	msgAllreadyExists = "This URL already exists 🤌🏽\n\n" + msgDeafult
+	msgSaved = "Saved 🤞🏻\n\n" + msgDeafult
+	msgDeleted = "Link was deleted 🚮\n\n" + msgDeafult
 )
