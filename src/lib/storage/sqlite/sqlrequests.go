@@ -13,6 +13,7 @@ var (
 
 	// Upadate
 	updateUsersIDs = `UPDATE users SET message_id = ?, chat_id = ? WHERE user_name = ?`
+	updateURLRemoved = `UPDATE urls SET removed = FALSE WHERE url = ? and user_id = (SELECT user_id FROM users WHERE user_name = ?)`
 
 	// Randomize
 	pickRandomURL = `SELECT url FROM urls WHERE user_id = (SELECT user_id FROM users WHERE user_name = ?) AND removed = FALSE ORDER BY RANDOM() LIMIT 1`
@@ -26,6 +27,7 @@ var (
 	// IsExists
 	isExistsUser = `SELECT COUNT(*) FROM users WHERE user_name = ?`
 	isExistsURL = `SELECT COUNT(*) FROM urls WHERE url = ? AND user_id = (SELECT user_id FROM users WHERE user_name = ? AND removed = FALSE)`
+	isRemovedURL = `SELECT COUNT(*) FROM urls WHERE url = ? AND user_id = (SELECT user_id FROM users WHERE user_name = ? AND removed = TRUE)`
 	// For reminds mb need to check the message ???
 	// isExistsRemind = `SELECT COUNT(*) FROM reminds WHERE user_id = (SELECT user_id FROM users WHERE user_name = ?) and date = ? and period = ?`
 )

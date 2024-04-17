@@ -19,6 +19,7 @@ const (
 	ErrDeleteFromDB = "cannot delete data from DB"
 	ErrIsExists = "cannot check if exists the page"
 	ErrAddNewUser = "cannot add new user"
+	ErrIsRemovedURL
 )
 
 type Storage struct {
@@ -115,8 +116,6 @@ func (s *Storage) RemoveUser(ctx context.Context, userName string) error {
 
 // IsExists check if storage exists.
 func (s *Storage) IsExistsPage(ctx context.Context, p *storage.Page) (bool, error) {
-	// q := `SELECT COUNT(*) FROM pages WHERE url = ? and user_name = ?`
-
 	var count int
 
 	if err := s.db.QueryRowContext(ctx, isExistsURL, p.URL, p.UserName).Scan(&count); err != nil {
@@ -135,6 +134,22 @@ func (s *Storage) IsExistsUser(ctx context.Context, userName string) (bool, erro
 	}
 
 	return count > 0, nil
+}
+
+func (s *Storage) IsRemovedURL(ctx context.Context, text string, username string) (bool, error) {
+	var count int
+
+	if err := s.db.QueryRowContext(ctx, isRemovedURL, text, username).Scan(&count); err != nil {
+		return false, e.Wrap(ErrIsRemovedURL, err)
+	}
+	return count > 0, nil
+}
+
+func (s *Storage) UpdateURLRemoved(ctx context.Context, text string, username string) error {
+	if _, err := s.db.ExecContext(ctx, updateURLRemoved, text, username); err != nil {
+		return e.Wrap("cannot rewrite removed: ", err)
+	}
+	return nil
 }
 
 // Init creates tables for database.

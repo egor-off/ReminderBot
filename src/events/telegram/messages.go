@@ -60,7 +60,17 @@ func (p *Processor) savePage(pageURL string, meta *Meta) (err error) {
 		return p.tg.EditMessage(telegram.NewEditMessage(u.MessageID, u.ChatID, msgAllreadyExists , defaultKeyboard))
 	}
 
-	if err := p.storage.SavePage(context.TODO(), page); err != nil {
+	isRemoved, err := p.storage.IsRemovedURL(context.TODO(), page.URL, meta.UserName)
+	if err != nil {
+		return err
+	}
+
+	if isRemoved {
+		err = p.storage.UpdateURLRemoved(context.TODO(), pageURL, page.UserName)
+		if err != nil {
+			return err
+		}
+	} else if err := p.storage.SavePage(context.TODO(), page); err != nil {
 		return err
 	}
 

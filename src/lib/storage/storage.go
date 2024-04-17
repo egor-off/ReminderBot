@@ -35,11 +35,13 @@ type Picker interface {
 type IsExister interface {
 	IsExistsUser(ctx context.Context, userName string) (bool, error)
 	IsExistsPage(ctx context.Context, p *Page) (bool, error)
+	IsRemovedURL(ctx context.Context, text string, username string) (bool, error)
 	// IsExistsRemind(ctx context.Context, r *Reminds) (bool, error)
 }
 
 type Updater interface {
 	UpdateUserInfo(ctx context.Context, username string, messageID int, chatID int) error
+	UpdateURLRemoved(ctx context.Context, text string, username string) error
 }
 
 type Page struct {
