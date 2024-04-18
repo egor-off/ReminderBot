@@ -4,7 +4,9 @@ import "strings"
 
 var (
 	msgHelp = `I can save links! 🔗
+
 For saving links just send me link in a message. ✍
+
 Press the "` + randomText + `" button and you'll get random link from messages you have sent before.`
 
 	msgHello = "Hello! This is simple autoreminder and linksaver bot!\n\n" + msgHelp

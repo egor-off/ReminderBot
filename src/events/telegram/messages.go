@@ -80,10 +80,6 @@ func (p *Processor) savePage(pageURL string, meta *Meta) (err error) {
 
 	return nil
 }
-// func (p *Processor) sendHelp(chatID int) error {
-// 	_, err := p.tg.SendMessage(telegram.NewMessage(chatID, msgHelp, nil))
-// 	return err
-// }
 
 func (p *Processor) unknownMessage(meta *Meta) error {
 	u, err := p.storage.PickUserInfo(context.TODO(), meta.UserName)
