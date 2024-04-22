@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"reminder-tg-bot/internal/events"
+	"ReminderBot/internal/events"
 )
 
 type Consumer struct {

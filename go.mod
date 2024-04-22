@@ -1,4 +1,4 @@
-module reminder-tg-bot
+module ReminderBot
 
 go 1.21.6
 

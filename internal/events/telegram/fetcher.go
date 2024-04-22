@@ -1,10 +1,10 @@
 package telegram
 
 import (
-	"reminder-tg-bot/pkg/clients/telegram"
-	"reminder-tg-bot/internal/events"
-	"reminder-tg-bot/pkg/e"
-	"reminder-tg-bot/internal/storage"
+	"ReminderBot/pkg/clients/telegram"
+	"ReminderBot/internal/events"
+	"ReminderBot/pkg/e"
+	"ReminderBot/internal/storage"
 	"log"
 )
 

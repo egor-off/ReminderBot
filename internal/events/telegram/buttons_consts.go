@@ -1,6 +1,6 @@
 package telegram
 
-import "reminder-tg-bot/pkg/clients/telegram"
+import "ReminderBot/pkg/clients/telegram"
 
 var (
 	// Default buttons.

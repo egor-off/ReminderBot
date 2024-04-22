@@ -2,8 +2,8 @@ package telegram
 
 import (
 	"errors"
-	"reminder-tg-bot/internal/events"
-	"reminder-tg-bot/pkg/e"
+	"ReminderBot/internal/events"
+	"ReminderBot/pkg/e"
 )
 
 var (

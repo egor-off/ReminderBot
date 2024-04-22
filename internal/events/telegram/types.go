@@ -1,8 +1,8 @@
 package telegram
 
 import (
-	"reminder-tg-bot/pkg/clients/telegram"
-	"reminder-tg-bot/internal/storage"
+	"ReminderBot/pkg/clients/telegram"
+	"ReminderBot/internal/storage"
 )
 
 type Processor struct {

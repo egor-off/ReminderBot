@@ -4,10 +4,10 @@ import (
 	"context"
 	"flag"
 	"log"
-	tgClient "reminder-tg-bot/pkg/clients/telegram"
-	eventconsumer "reminder-tg-bot/internal/consumer/eventConsumer"
-	"reminder-tg-bot/internal/events/telegram"
-	storage "reminder-tg-bot/internal/storage/sqlite"
+	tgClient "ReminderBot/pkg/clients/telegram"
+	eventconsumer "ReminderBot/internal/consumer/eventConsumer"
+	"ReminderBot/internal/events/telegram"
+	storage "ReminderBot/internal/storage/sqlite"
 )
 
 const (

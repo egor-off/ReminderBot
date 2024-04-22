@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"path"
-	"reminder-tg-bot/pkg/e"
+	"ReminderBot/pkg/e"
 	"strconv"
 	"strings"
 	"log"

@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"log"
 	"net/url"
-	"reminder-tg-bot/pkg/clients/telegram"
-	"reminder-tg-bot/pkg/e"
-	"reminder-tg-bot/internal/storage"
+	"ReminderBot/pkg/clients/telegram"
+	"ReminderBot/pkg/e"
+	"ReminderBot/internal/storage"
 	"strings"
 )
 

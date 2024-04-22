@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"log"
-	"reminder-tg-bot/pkg/clients/telegram"
-	"reminder-tg-bot/pkg/e"
-	"reminder-tg-bot/internal/storage"
+	"ReminderBot/pkg/clients/telegram"
+	"ReminderBot/pkg/e"
+	"ReminderBot/internal/storage"
 )
 
 func (p *Processor) doCallback(text string, meta *Meta) error {

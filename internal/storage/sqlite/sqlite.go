@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"log"
-	"reminder-tg-bot/pkg/e"
-	"reminder-tg-bot/internal/storage"
+	"ReminderBot/pkg/e"
+	"ReminderBot/internal/storage"
 
 	_ "github.com/mattn/go-sqlite3"
 )
